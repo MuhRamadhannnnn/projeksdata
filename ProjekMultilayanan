@@ -1,0 +1,1963 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+
+using namespace std;
+//1
+//menu login
+struct Akun{
+    //memnbuat tipe data pada void
+    string username;
+    string password;
+    string inputuser;
+    string inputpass;
+};
+
+class menulogin{
+    private:
+    //memasukan fungsi struct akun pada input login dan register
+    Akun akunterdaftar;
+    bool sudahterdaftar = false; // 
+    //membuat variabel boolean untuk status registrasi
+  
+
+    public:
+    //membuat fungsi registrasi
+    void registrasi(){
+        cout<<"\n== FORM REGISTER ==\n";
+        cout<<"Masukkan Username baru : ";
+        cin>>akunterdaftar.username;
+        cout<<"Masukkan Password baru : ";
+        cin>>akunterdaftar.password;
+        sudahterdaftar = true;
+        cout<<"Registrasi berhasil!\n";
+    }
+    //membuat fungsi login
+    void login() {
+        cout<<"\n== FORM LOGIN ==\n";
+        cout<<"Masukkan username : ";
+        cin>>akunterdaftar.inputuser;
+        cout<<"Masukkan password : ";
+        cin>>akunterdaftar.inputpass;
+
+        if(sudahterdaftar && akunterdaftar.inputuser == akunterdaftar.username && akunterdaftar.inputpass == akunterdaftar.password) {
+            cout<<"Login Berhasil!\n";
+
+        } else {
+            cout<<"Login Gagal! Username atau password salah.\n";
+            cout<<"Masukan Ulang!!!!\n";
+            login(); // Memanggil kembali fungsi login jika gagal
+        }
+    }
+    //menampilkan menu 
+    void menampilkanmenu() {
+        int pilihan;
+
+        //melakukan pilihan jika pilihan tidak sama dengan 1 atau 2 maka akan diulang
+        do{
+            cout<<"==Selamat datang di akun gofood!==\n";
+            cout<<"1. Login\n";
+            cout<<"2. Register\n";
+             cout << "==================================\n";
+            cout<<"Pilih menu (1/2): ";
+            cin>>pilihan;
+
+        }while(pilihan !=1 && pilihan != 2);
+
+        //melakukan kondisi atau pilihan
+        if (pilihan == 1) {
+         //   if(!sudahterdaftar) {
+                cout<<"Belum ada akun terdaftar. Silakan untuk melakukan registrasi terlebih dahulu.\n";
+                registrasi();
+          //  }
+            login();
+            } else if(pilihan == 2) {
+                registrasi();
+                login();
+            }
+        }
+
+
+};
+
+//2
+//membuat menu dalam toko
+struct Menutoko{
+    int isimenu;
+    string pesanan[50];
+    int harga[50];
+    int jumlahpesanan = 0; 
+    char lagi;
+    int pilihsearching;
+    //int pilihtoko;
+    int pilihmenu;
+};
+
+// Struct untuk data restoran berdasarkan rating
+struct Restoran {
+    string nama;
+    float rating;
+    string jenismakanan;
+};
+
+// Struct untuk data makanan berdasarkan harga dan jenis
+struct DataMakanan {
+    string nama;
+    int harga;
+    string jenis;
+    string restoran;
+};
+
+// Class untuk pencarian berdasarkan rating menggunakan binary search
+class PesananRating {
+private:
+    Restoran daftarRestoran[10];
+    int jumlahRestoran;
+    
+    // Manual sorting function untuk rating
+    void sortByRating() {
+        for (int i = 0; i < jumlahRestoran - 1; i++) {
+            for (int j = 0; j < jumlahRestoran - i - 1; j++) {
+                if (daftarRestoran[j].rating > daftarRestoran[j + 1].rating) {
+                    // Swap
+                    Restoran temp = daftarRestoran[j];
+                    daftarRestoran[j] = daftarRestoran[j + 1];
+                    daftarRestoran[j + 1] = temp;
+                }
+            }
+        }
+    }
+    
+public:
+    PesananRating() {
+        // Inisialisasi data restoran dengan rating
+        jumlahRestoran = 10;
+        
+        daftarRestoran[0] = {"Bebek Madura Sambal Hitam", 4.0, "Bebek"};
+        daftarRestoran[1] = {"Bebek Goreng Haji Slamet", 4.1, "Bebek"};
+        daftarRestoran[2] = {"Mie Pedas Badai", 4.2, "Mie"};
+        daftarRestoran[3] = {"Bakso Beranak Jaya", 4.3, "Bakso"};
+        daftarRestoran[4] = {"Bakso Pak Kumis", 4.4, "Bakso"};
+        daftarRestoran[5] = {"Ayam Geprek Sambal Korek", 4.5, "Ayam"};
+        daftarRestoran[6] = {"Martabak Bangka 77", 4.6, "Martabak"};
+        daftarRestoran[7] = {"Martabak Legend", 4.7, "Martabak"};
+        daftarRestoran[8] = {"Ayam Geprek Bangjo", 4.8, "Ayam"};
+        daftarRestoran[9] = {"Mie Gacoan", 4.9, "Mie"};
+        
+        // Sort data berdasarkan rating
+        sortByRating();
+    }
+    
+    void cariRestoranByRating() {
+        float targetRating;
+        cout << "\n=== Pencarian Restoran Berdasarkan Rating (Binary Search) ===\n";
+        cout << "Masukkan rating minimum (1.0 - 5.0): ";
+        cin >> targetRating;
+        
+        // Binary search untuk mencari restoran dengan rating >= targetRating
+        int left = 0, right = jumlahRestoran - 1;
+        int startIndex = -1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (daftarRestoran[mid].rating >= targetRating) {
+                startIndex = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        
+        if (startIndex != -1) {
+            cout << "\n=== Restoran dengan Rating >= " << targetRating << " ===\n";
+            int counter = 1;
+            for (int i = startIndex; i < jumlahRestoran; i++) {
+                cout << counter << ". " << daftarRestoran[i].nama 
+                     << " - Rating: " << daftarRestoran[i].rating 
+                     << " - Jenis: " << daftarRestoran[i].jenismakanan << endl;
+                counter++;
+            }
+        } else {
+            cout << "Tidak ada restoran dengan rating >= " << targetRating << endl;
+        }
+    }
+};
+
+// Class untuk pencarian berdasarkan harga menggunakan linear search
+class PesananHarga {
+private:
+    DataMakanan daftarMakanan[18];
+    int jumlahMakanan;
+    
+public:
+    PesananHarga() {
+        // Inisialisasi data makanan
+        jumlahMakanan = 18;
+        
+        daftarMakanan[0] = {"Ayam Geprek", 18000, "Ayam", "Ayam Geprek Bangjo"};
+        daftarMakanan[1] = {"Ayam Geprek Keju", 22000, "Ayam", "Ayam Geprek Bangjo"};
+        daftarMakanan[2] = {"Ayam Geprek Sambel Korek", 19000, "Ayam", "Ayam Geprek Sambal Korek"};
+        daftarMakanan[3] = {"Ayam Geprek Original", 17000, "Ayam", "Ayam Geprek Sambal Korek"};
+        daftarMakanan[4] = {"Martabak Manis", 25000, "Martabak", "Martabak Legend"};
+        daftarMakanan[5] = {"Martabak Telur", 30000, "Martabak", "Martabak Legend"};
+        daftarMakanan[6] = {"Martabak Cokelat Keju", 26000, "Martabak", "Martabak Bangka 77"};
+        daftarMakanan[7] = {"Martabak Telur Spesial", 32000, "Martabak", "Martabak Bangka 77"};
+        daftarMakanan[8] = {"Bakso Urat", 25000, "Bakso", "Bakso Pak Kumis"};
+        daftarMakanan[9] = {"Mie Ayam", 20000, "Bakso", "Bakso Pak Kumis"};
+        daftarMakanan[10] = {"Bakso Beranak", 28000, "Bakso", "Bakso Beranak Jaya"};
+        daftarMakanan[11] = {"Bakso Mercon", 25000, "Bakso", "Bakso Beranak Jaya"};
+        daftarMakanan[12] = {"Mie Hompimpa", 17000, "Mie", "Mie Gacoan"};
+        daftarMakanan[13] = {"Mie Suit", 17000, "Mie", "Mie Gacoan"};
+        daftarMakanan[14] = {"Mie Badai Level 3", 18000, "Mie", "Mie Pedas Badai"};
+        daftarMakanan[15] = {"Mie Goreng Pedas", 16000, "Mie", "Mie Pedas Badai"};
+        daftarMakanan[16] = {"Bebek Goreng Original", 30000, "Bebek", "Bebek Goreng Haji Slamet"};
+        daftarMakanan[17] = {"Bebek Bakar", 32000, "Bebek", "Bebek Goreng Haji Slamet"};
+    }
+
+    void cariMakananByHarga() {
+        int hargaMin, hargaMax;
+        cout << "\n=== Pencarian Makanan Berdasarkan Harga (Linear Search) ===\n";
+        cout << "Masukkan harga minimum: Rp ";
+        cin >> hargaMin;
+        cout << "Masukkan harga maksimum: Rp ";
+        cin >> hargaMax;
+        
+        DataMakanan hasil[18];
+        int jumlahHasil = 0;
+        
+        // Linear search untuk mencari makanan dalam range harga
+        for (int i = 0; i < jumlahMakanan; i++) {
+            if (daftarMakanan[i].harga >= hargaMin && daftarMakanan[i].harga <= hargaMax) {
+                hasil[jumlahHasil] = daftarMakanan[i];
+                jumlahHasil++;
+            }
+        }
+        
+        if (jumlahHasil > 0) {
+            cout << "\n=== Makanan dengan Harga Rp " << hargaMin << " - Rp " << hargaMax << " ===\n";
+            for (int i = 0; i < jumlahHasil; i++) {
+                cout << i + 1 << ". " << hasil[i].nama 
+                     << " - Rp " << hasil[i].harga 
+                     << " (" << hasil[i].restoran << ")" << endl;
+            }
+        } else {
+            cout << "Tidak ada makanan dalam range harga tersebut.\n";
+        }
+    }
+};
+
+// Class untuk pencarian berdasarkan jenis makanan menggunakan linear search
+class PesananJenis {
+private:
+    DataMakanan daftarMakanan[18];
+    int jumlahMakanan;
+    
+public:
+    PesananJenis() {
+        // Inisialisasi data makanan (sama seperti PesananHarga)
+        jumlahMakanan = 18;
+        
+        daftarMakanan[0] = {"Ayam Geprek", 18000, "Ayam", "Ayam Geprek Bangjo"};
+        daftarMakanan[1] = {"Ayam Geprek Keju", 22000, "Ayam", "Ayam Geprek Bangjo"};
+        daftarMakanan[2] = {"Ayam Geprek Sambel Korek", 19000, "Ayam", "Ayam Geprek Sambal Korek"};
+        daftarMakanan[3] = {"Ayam Geprek Original", 17000, "Ayam", "Ayam Geprek Sambal Korek"};
+        daftarMakanan[4] = {"Martabak Manis", 25000, "Martabak", "Martabak Legend"};
+        daftarMakanan[5] = {"Martabak Telur", 30000, "Martabak", "Martabak Legend"};
+        daftarMakanan[6] = {"Martabak Cokelat Keju", 26000, "Martabak", "Martabak Bangka 77"};
+        daftarMakanan[7] = {"Martabak Telur Spesial", 32000, "Martabak", "Martabak Bangka 77"};
+        daftarMakanan[8] = {"Bakso Urat", 25000, "Bakso", "Bakso Pak Kumis"};
+        daftarMakanan[9] = {"Mie Ayam", 20000, "Bakso", "Bakso Pak Kumis"};
+        daftarMakanan[10] = {"Bakso Beranak", 28000, "Bakso", "Bakso Beranak Jaya"};
+        daftarMakanan[11] = {"Bakso Mercon", 25000, "Bakso", "Bakso Beranak Jaya"};
+        daftarMakanan[12] = {"Mie Hompimpa", 17000, "Mie", "Mie Gacoan"};
+        daftarMakanan[13] = {"Mie Suit", 17000, "Mie", "Mie Gacoan"};
+        daftarMakanan[14] = {"Mie Badai Level 3", 18000, "Mie", "Mie Pedas Badai"};
+        daftarMakanan[15] = {"Mie Goreng Pedas", 16000, "Mie", "Mie Pedas Badai"};
+        daftarMakanan[16] = {"Bebek Goreng Original", 30000, "Bebek", "Bebek Goreng Haji Slamet"};
+        daftarMakanan[17] = {"Bebek Bakar", 32000, "Bebek", "Bebek Goreng Haji Slamet"};
+    }
+
+     void cariMakananByJenis() {
+        string jenisTarget;
+        cout << "\n=== Pencarian Makanan Berdasarkan Jenis (Linear Search) ===\n";
+        cout << "Jenis makanan tersedia: Ayam, Martabak, Bakso, Mie, Bebek\n";
+        cout << "Masukkan jenis makanan: ";
+        cin >> jenisTarget;
+        
+        DataMakanan hasil[18];
+        int jumlahHasil = 0;
+        
+        // Linear search untuk mencari makanan berdasarkan jenis
+        for (int i = 0; i < jumlahMakanan; i++) {
+            if (daftarMakanan[i].jenis == jenisTarget) {
+                hasil[jumlahHasil] = daftarMakanan[i];
+                jumlahHasil++;
+            }
+        }
+        
+        if (jumlahHasil > 0) {
+            cout << "\n=== Makanan Jenis " << jenisTarget << " ===\n";
+            for (int i = 0; i < jumlahHasil; i++) {
+                cout << i + 1 << ". " << hasil[i].nama 
+                     << " - Rp " << hasil[i].harga 
+                     << " (" << hasil[i].restoran << ")" << endl;
+            }
+        } else {
+            cout << "Tidak ada makanan dengan jenis " << jenisTarget << ".\n";
+        }
+    }
+};
+
+
+//membuat toko dan seacrhing jenis makanan
+class Toko{
+    private:
+    Menutoko menu;
+    public:
+
+
+    //shorting
+     void shortingHarga() {
+        if (menu.jumlahpesanan == 0) {
+            cout << "Belum ada pesanan untuk disorting.\n";
+            return;
+        }
+
+        int urutan;
+        cout << "\n=== Sorting Harga Menu ===\n";
+        cout << "1. Harga Terendah ke Tertinggi\n";
+        cout << "2. Harga Tertinggi ke Terendah\n";
+        cout << "Pilih urutan (1/2): ";
+        cin >> urutan;
+
+        // Bubble sort implementation
+        for (int i = 0; i < menu.jumlahpesanan - 1; i++) {
+            for (int j = 0; j < menu.jumlahpesanan - i - 1; j++) {
+                if ((urutan == 1 && menu.harga[j] > menu.harga[j + 1]) || 
+                    (urutan == 2 && menu.harga[j] < menu.harga[j + 1])) {
+                    // Swap both harga and pesanan
+                    swap(menu.harga[j], menu.harga[j + 1]);
+                    swap(menu.pesanan[j], menu.pesanan[j + 1]);
+                }
+            }
+        }
+
+        // Show sorted menu
+        cout << "\n=== Menu Setelah Disorting ===\n";
+        for (int i = 0; i < menu.jumlahpesanan; i++) {
+            cout << i + 1 << ". " << menu.pesanan[i] << " - Rp " << menu.harga[i] << endl;
+        }
+    }
+
+    // membuat pilihan mau searcing atau tidak
+    void pilihsearchingdantoko(){
+        int pilihan;
+
+        //memasukan pilihan jika pilihan tidak sama dengan 1 atau 2 maka akan diulang
+        do{
+            cout<<"=== Menu Searching ===\n";
+            cout<<"1. Cari Berdasarkan Jenis Makanan\n";
+            cout<<"2. Pilih Berdasarkan Toko\n";
+            cout<<"3. Cari Berdasarkan Rating (Binary Search)\n";
+            
+            cout<<"4. Cari Berdasarkan Harga (Linear Search)\n";
+            cout<<"5. Cari Berdasarkan Jenis (Linear Search)\n";
+            cout<<"Masukan pilihan (1-5): ";
+            cin>>pilihan;
+        }while(pilihan < 1 || pilihan > 5);
+
+        //melakukan perkondisian
+        if(pilihan == 1) {
+            cout<<endl;
+            searchingmakanan();
+        } else if(pilihan == 2) {
+            cout<<endl;
+            menampilkanmenu();
+        } else if(pilihan == 3){
+             PesananRating ratingSearch;
+            ratingSearch.cariRestoranByRating();
+
+        } else if(pilihan == 4){
+             PesananHarga hargaSearch;
+            hargaSearch.cariMakananByHarga();
+        } else if(pilihan == 5){
+             PesananJenis jenisSearch;
+            jenisSearch.cariMakananByJenis();
+
+        } else {
+            cout<<"Pilihan anda tidak ada!!"<<endl;
+        }
+    }
+
+    //fungsi searching makanan 1
+    void searchingmakanan() {
+    cout<<"\n=== Cari Berdasarkan Jenis Makanan ===\n";
+    cout<<"1. Ayam\n";
+    cout<<"2. Martabak\n";
+    cout<<"3. Bakso\n";
+    cout<<"4. Mie\n";
+    cout<<"5. Bebek\n";
+    cout<<"6. Pecel\n";
+    cout<<"Pilih jenis makanan: ";
+    cin>>menu.pilihsearching;
+    cout<<endl;
+
+    //melakukan perkondisian
+    if(menu.pilihsearching ==  1){
+    cout<<"Toko dengan menu Ayam:\n";
+    cout<<"1. Ayam Geprek Bangjo\n";
+    cout<<"2. ayam Gebrek Sambal Korek\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+    cout<<"Anda memilih Ayam Geprek Bangjo\n";
+    ifstream file("ayamgeprekbangjo.txt");
+    string baris;
+
+    if(!file.is_open()){
+        cerr<<"File tidak ditemukan!"<<endl;
+    }else{
+        while(getline(file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+    }
+
+    do{
+        cout<<"Pilih menu: ";
+        cin>>menu.isimenu;
+
+        switch(menu.isimenu){
+            case 1:
+                menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek";
+                menu.harga[menu.jumlahpesanan] = 18000;
+                break;
+            case 2:
+                menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek Keju";
+                menu.harga[menu.jumlahpesanan] = 22000;
+                break;
+            case 3:
+                menu.pesanan[menu.jumlahpesanan] = "Es Teh";
+                menu.harga[menu.jumlahpesanan] = 5000;
+                break;
+            case 4:
+                menu.pesanan[menu.jumlahpesanan] = "Es Jeruk";
+                menu.harga[menu.jumlahpesanan] = 7000;
+                break;
+            default:
+                cout<<"Pilihan tidak ada pada daftar menu.\n";
+                continue; // kembali ke atas loop
+        }
+
+        cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    } while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+    break;
+}
+
+    case 2: {
+    cout<<"Anda memilih Ayam Geprek Sambel Korek\n";
+    ifstream file2("ayamgepreksambelkorek.txt");
+    string baris2;
+
+    if(!file2.is_open()){
+        cerr<<"File tidak ditemukan!"<<endl;
+    }else{
+        while(getline(file2, baris2)){
+            cout<<baris2<<endl;
+        }
+        file2.close();
+    }
+
+    // Pemesanan menu untuk Ayam Sambel Korek
+    do{
+        cout<<"Pilih menu: ";
+        cin>>menu.isimenu;
+
+        switch(menu.isimenu){
+            case 1:
+                menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek Sambel Korek";
+                menu.harga[menu.jumlahpesanan] = 19000;
+                break;
+            case 2:
+                menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek Original";
+                menu.harga[menu.jumlahpesanan] = 17000;
+                break;
+            case 3:
+                menu.pesanan[menu.jumlahpesanan] = "Es Teh Manis";
+                menu.harga[menu.jumlahpesanan] = 5000;
+                break;
+            case 4:
+                menu.pesanan[menu.jumlahpesanan] = "Air Mineral";
+                menu.harga[menu.jumlahpesanan] = 4000;
+                break;
+            default:
+                cout<<"Pilihan tidak ada pada daftar menu.\n";
+                continue;
+        }
+
+        cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    } while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+    break;
+}
+
+        default: 
+            cout<<"Pilihan tidak ada pada daftar menu.\n";
+            break;
+        
+    }
+
+     }
+     else if(menu.pilihsearching == 2){
+    cout<<"Toko dengan menu Martabak:\n";
+    cout<<"1. Martabak Legend\n";
+    cout<<"2. Martabak Bangka 77\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+        cout<<"Anda memilih Martabak Legend\n";
+        ifstream file("martabaklegend.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Martabak Manis";
+                    menu.harga[menu.jumlahpesanan] = 25000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Martabak Telur";
+                    menu.harga[menu.jumlahpesanan] = 30000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Teh Botol";
+                    menu.harga[menu.jumlahpesanan] = 6000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Jeruk";
+                    menu.harga[menu.jumlahpesanan] = 8000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    case 2: {
+        cout<<"Anda memilih Martabak Bangka 77\n";
+        ifstream file2("martabakbangka77.txt");
+        string baris;
+        if(!file2.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file2, baris)){
+                cout<<baris<<endl;
+            }
+            file2.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Martabak Cokelat Keju";
+                    menu.harga[menu.jumlahpesanan] = 26000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Martabak Telur Spesial";
+                    menu.harga[menu.jumlahpesanan] = 32000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Teh Tarik";
+                    menu.harga[menu.jumlahpesanan] = 7000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Susu Jahe Panas";
+                    menu.harga[menu.jumlahpesanan] = 8000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    }
+}
+    else if(menu.pilihsearching == 3){
+    cout<<"Toko dengan menu Bakso:\n";
+    cout<<"1. Bakso Pak Kumis\n";
+    cout<<"2. Bakso Beranak Jaya\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+        cout<<"Anda memilih Bakso Pak Kumis\n";
+        ifstream file("baksopakkumis.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Bakso Urat";
+                    menu.harga[menu.jumlahpesanan] = 25000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Mie Ayam";
+                    menu.harga[menu.jumlahpesanan] = 20000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Cendol";
+                    menu.harga[menu.jumlahpesanan] = 12000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Wedang Jahe";
+                    menu.harga[menu.jumlahpesanan] = 8000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    case 2: {
+        cout<<"Anda memilih Bakso Beranak Jaya\n";
+        ifstream file("baksoberanakjaya.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Bakso Beranak";
+                    menu.harga[menu.jumlahpesanan] = 28000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Bakso Mercon";
+                    menu.harga[menu.jumlahpesanan] = 25000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Jeruk";
+                    menu.harga[menu.jumlahpesanan] = 6000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Cincau";
+                    menu.harga[menu.jumlahpesanan] = 7000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    }
+}
+    else if(menu.pilihsearching == 4){
+    cout<<"Toko dengan menu Mie:\n";
+    cout<<"1. Mie Gacoan\n";
+    cout<<"2. Mie Pedas Badai\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+        cout<<"Anda memilih Mie Gacoan\n";
+        ifstream file("miegacoan.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Mie Hompimpa";
+                    menu.harga[menu.jumlahpesanan] = 17000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Mie Suit";
+                    menu.harga[menu.jumlahpesanan] = 17000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Genderuwo";
+                    menu.harga[menu.jumlahpesanan] = 10000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Tuyul";
+                    menu.harga[menu.jumlahpesanan] = 8000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    case 2: {
+        cout<<"Anda memilih Mie Pedas Badai\n";
+        ifstream file("miepedasbadai.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Mie Badai Level 3";
+                    menu.harga[menu.jumlahpesanan] = 18000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Mie Goreng Pedas";
+                    menu.harga[menu.jumlahpesanan] = 16000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Susu Lava";
+                    menu.harga[menu.jumlahpesanan] = 9000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Air Mineral";
+                    menu.harga[menu.jumlahpesanan] = 4000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    }
+}
+
+else if(menu.pilihsearching == 5){
+    cout<<"Toko dengan menu Bebek:\n";
+    cout<<"1. Bebek Goreng Haji Slamet\n";
+    cout<<"2. Bebek Madura Sambal Hitam\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+        cout<<"Anda memilih Bebek Goreng Haji Slamet\n";
+        ifstream file("bebekgorenghaji.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Bebek Goreng Original";
+                    menu.harga[menu.jumlahpesanan] = 30000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Bebek Bakar";
+                    menu.harga[menu.jumlahpesanan] = 32000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Teh Manis";
+                    menu.harga[menu.jumlahpesanan] = 5000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Kelapa";
+                    menu.harga[menu.jumlahpesanan] = 10000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    case 2: {
+        cout<<"Anda memilih Bebek Madura Sambal Hitam\n";
+        ifstream file("bebekmadura.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Bebek Sambal Hitam";
+                    menu.harga[menu.jumlahpesanan] = 31000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Bebek Kremes";
+                    menu.harga[menu.jumlahpesanan] = 32000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Kelapa Muda";
+                    menu.harga[menu.jumlahpesanan] = 10000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Air Putih";
+                    menu.harga[menu.jumlahpesanan] = 3000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    }
+}
+
+else if(menu.pilihsearching == 6){
+    cout<<"Toko dengan menu Pecel:\n";
+    cout<<"1. Pecel Mbok Darmi\n";
+    cout<<"2. Pecel Lele Malam 88\n";
+    cout<<"Pilih menu: ";
+    cin>>menu.pilihmenu;
+
+    switch(menu.pilihmenu){
+    case 1: {
+        cout<<"Anda memilih Pecel Mbok Darmi\n";
+        ifstream file("pecelmbokdarmi.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Pecel Lele";
+                    menu.harga[menu.jumlahpesanan] = 17000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Pecel Ayam";
+                    menu.harga[menu.jumlahpesanan] = 18000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Campur";
+                    menu.harga[menu.jumlahpesanan] = 12000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Dawet";
+                    menu.harga[menu.jumlahpesanan] = 8000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    case 2: {
+        cout<<"Anda memilih Pecel Lele Malam 88\n";
+        ifstream file("pecellelemalam88.txt");
+        string baris;
+        if(!file.is_open()){
+            cerr<<"File tidak ditemukan!"<<endl;
+        }else{
+            while(getline(file, baris)){
+                cout<<baris<<endl;
+            }
+            file.close();
+        }
+
+        do{
+            cout<<"Pilih menu: ";
+            cin>>menu.isimenu;
+            switch(menu.isimenu){
+                case 1:
+                    menu.pesanan[menu.jumlahpesanan] = "Pecel Lele Jumbo";
+                    menu.harga[menu.jumlahpesanan] = 19000;
+                    break;
+                case 2:
+                    menu.pesanan[menu.jumlahpesanan] = "Tahu Tempe Pecel";
+                    menu.harga[menu.jumlahpesanan] = 15000;
+                    break;
+                case 3:
+                    menu.pesanan[menu.jumlahpesanan] = "Es Campur Segar";
+                    menu.harga[menu.jumlahpesanan] = 12000;
+                    break;
+                case 4:
+                    menu.pesanan[menu.jumlahpesanan] = "Teh Hangat";
+                    menu.harga[menu.jumlahpesanan] = 4000;
+                    break;
+                default:
+                    cout<<"Pilihan tidak ada pada daftar menu.\n";
+                    continue;
+            }
+            cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+            menu.jumlahpesanan++;
+            cout<<"Ingin menambah menu lagi? (y/n): ";
+            cin>>menu.lagi;
+        } while(menu.lagi == 'y' || menu.lagi == 'Y');
+        break;
+    }
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    }
+}
+
+     
+    }
+    //membuat pilihan toko
+    void pilihantoko(){
+        int pilihan;
+
+    //memasukan pilihan toko jika pilihan tidak sama dengan 1 atau 2 maka akan diulang
+    do{
+        cout<<"=== Pilih Toko ===\n";
+        cout<<"1. Bakso Pak Kumis\n";
+        cout<<"2. Warung Padang\n";
+        cout<<"3. Sushime\n";
+        cout<<"4. Cafe Paris\n";
+        cout<<"5. Warung Sunda\n";
+        cout<<"6. Ayam Geprek bangjo\n";
+        cout<<"7. Martabak Legend\n";
+        cout<<"8. Nasi Goreng Maju Mundur\n";
+        cout<<"9. Bebek Goreng Haji\n";
+        cout<<"10. Mie Gacoan\n";
+        cout<<"11. Pecel Mbok Darmi\n";
+        cout<<"12. Steak House Premiun\n";
+        cout<<"Masukan pilihan toko (1-12): ";
+        cin>>pilihan;
+        }while(pilihan < 1 || pilihan > 12);
+
+    //melakukan kondisi atau pilihan 1
+    if(pilihan == 1) {
+    system("timeout /t 2");
+    system("cls");
+    cout<<"Anda memilih Bakso Pak Kumis\n";
+    ifstream file("baksopakkumis.txt");
+    string baris;
+
+    // Cek apakah file berhasil dibuka
+    if(!file.is_open()) {
+        cerr << "File tidak ditemukan!" << endl;
+    }else{
+        while (getline(file, baris)) {
+            cout << baris << endl;
+        }
+        file.close();
+    }
+
+    do{
+        cout<<"\nPilih menu: ";
+        cin>>menu.isimenu;
+
+        switch (menu.isimenu) {
+            case 1:
+                menu.pesanan[menu.jumlahpesanan] = "Bakso Urat";
+                menu.harga[menu.jumlahpesanan] = 25000;
+                break;
+
+            case 2:
+                menu.pesanan[menu.jumlahpesanan] = "Mie Ayam";
+                menu.harga[menu.jumlahpesanan] = 20000;
+                break;
+
+            case 3:
+                menu.pesanan[menu.jumlahpesanan] = "Es Cendol";
+                menu.harga[menu.jumlahpesanan] = 5000;
+                break;
+            case 4:
+                menu.pesanan[menu.jumlahpesanan] = "Tahu Tempe";
+                menu.harga[menu.jumlahpesanan] = 8000;
+                break;
+
+            default:
+                cout << "Menu tidak tersedia.\n";
+                break;
+        }
+
+        cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        //melakukan perulangan jika ingin menambahkan menu
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+   
+}
+
+    //melakukan kondisi atau pilihan 2
+       else if(pilihan == 2){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Warung Padang\n";
+        ifstream file("warungpadang.txt");
+        string baris;
+
+    //melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }else{
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+    }
+
+    //membuat pilihan menu dalam toko 2
+    do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Rendang";
+        menu.harga[menu.jumlahpesanan] = 35000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Sate Padang";
+        menu.harga[menu.jumlahpesanan] = 30000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Teh Tarek";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Jus Alpukat";
+        menu.harga[menu.jumlahpesanan] = 15000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+  
+}
+    //melakukan kondisi atau pilihan 3
+      else if(pilihan == 3){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Sushime\n";
+        ifstream file("sushiexpress.txt");
+        string baris;
+
+    //melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+    //membuat pilihan menu dalam toko 3
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Sushi Roll";
+        menu.harga[menu.jumlahpesanan] = 45000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Ramen";
+        menu.harga[menu.jumlahpesanan] = 40000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Matcha Latte";
+        menu.harga[menu.jumlahpesanan] = 20000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Sakura Tea";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+   
+}
+
+//melakukan kondisi atau pilihan 4
+      else if(pilihan == 4){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Cafe Paris\n";
+        ifstream file("cafeparis.txt");
+        string baris;
+
+    //perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+    //membuat pilihan menu dalam toko 4
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Croissant";
+        menu.harga[menu.jumlahpesanan] = 35000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Quiche Lorraine";
+        menu.harga[menu.jumlahpesanan] = 50000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Espresso";
+        menu.harga[menu.jumlahpesanan] = 25000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Cafe Latte";
+        menu.harga[menu.jumlahpesanan] = 30000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+    
+}
+
+//melakukan kondisi atau pilihan 5
+       else if(pilihan == 5){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Warung Sunda\n";
+        ifstream file("warungsunda.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+    //membuat pilihan menu dalam toko 5
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Nasi Timbel";
+        menu.harga[menu.jumlahpesanan] = 30000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Karedok";
+        menu.harga[menu.jumlahpesanan] = 20000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Cincau";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Bajigur";
+        menu.harga[menu.jumlahpesanan] = 12000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 6
+       else if(pilihan == 6){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Ayam Geprek Bangjo\n";
+        ifstream file("ayamgeprekbangjo.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+    //membuat pilihan menu dalam toko 6
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek";
+        menu.harga[menu.jumlahpesanan] = 18000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Ayam Geprek Keju";
+        menu.harga[menu.jumlahpesanan] = 22000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Teh";
+        menu.harga[menu.jumlahpesanan] = 5000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Es Jeruk";
+        menu.harga[menu.jumlahpesanan] = 7000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 7
+       else if(pilihan == 7){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Martabak Legend\n";
+        ifstream file("martabaklegend.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+    //membuat pilihan menu dalam toko 7
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Martabak Manis";
+        menu.harga[menu.jumlahpesanan] = 25000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Martabak Telur";
+        menu.harga[menu.jumlahpesanan] = 30000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Teh Botol";
+        menu.harga[menu.jumlahpesanan] = 6000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Es Jeruk";
+        menu.harga[menu.jumlahpesanan] = 8000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 8
+       else if(pilihan == 8){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Nasi Goreng Maju Mundur\n";
+        ifstream file("nasigorengmajumundur.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+
+    //membuat pilihan menu dalam toko 8
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Nasi Goreng Spesial";
+        menu.harga[menu.jumlahpesanan] = 25000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Nasi Goreng Pete";
+        menu.harga[menu.jumlahpesanan] = 22000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Kopi Hitam";
+        menu.harga[menu.jumlahpesanan] = 7000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Teh Tarik";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 9
+       else if(pilihan == 9){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Bebek Goreng Haji\n";
+        ifstream file("bebekgorenghaji.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+
+    //membuat pilihan menu dalam toko 9
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Bebek Goreng Original";
+        menu.harga[menu.jumlahpesanan] = 30000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Bebek Bakar";
+        menu.harga[menu.jumlahpesanan] = 32000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Teh Manis";
+        menu.harga[menu.jumlahpesanan] = 5000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Es Kelapa";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 10
+       else if(pilihan == 10){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Mie Gacoan\n";
+        ifstream file("miegacoan.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+
+    //membuat pilihan menu dalam toko 10
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Mie Hompimpa";
+        menu.harga[menu.jumlahpesanan] = 17000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Mie Suit";
+        menu.harga[menu.jumlahpesanan] = 17000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Genderuwo";
+        menu.harga[menu.jumlahpesanan] = 10000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Es Tuyul";
+        menu.harga[menu.jumlahpesanan] = 8000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 11
+       else if(pilihan == 11){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Pecel Mbok Darmi\n";
+        ifstream file("pecelmbokdarmi.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+
+    //membuat pilihan menu dalam toko 11
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Pecel Lele";
+        menu.harga[menu.jumlahpesanan] = 17000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Pecel Ayam";
+        menu.harga[menu.jumlahpesanan] = 18000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Es Campur";
+        menu.harga[menu.jumlahpesanan] = 12000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Es Dawet";
+        menu.harga[menu.jumlahpesanan] = 8000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+
+ //melakukan kondisi atau pilihan 12
+       else if(pilihan == 12){
+        system("timeout /t 2");
+        system("cls");
+        cout<<"Anda memilih Steak House Premium\n";
+        ifstream file("steakhousepremium.txt");
+        string baris;
+
+    //jika melakukan perkondision jika file tidak ditemukan
+        if(!file.is_open()){
+            cerr << "File tidak ditemukan!" << endl;
+    
+        }
+        while(getline (file, baris)){
+            cout<<baris<<endl;
+        }
+        file.close();
+
+
+    //membuat pilihan menu dalam toko 12
+   do{
+   cout<<"Pilih menu: ";
+   cin>>menu.isimenu;
+
+   switch(menu.isimenu){
+    case 1:
+        menu.pesanan[menu.jumlahpesanan] = "Beef Steak";
+        menu.harga[menu.jumlahpesanan] = 55000;
+        break;
+
+    case 2:
+        menu.pesanan[menu.jumlahpesanan] = "Chicken Steak";
+        menu.harga[menu.jumlahpesanan] = 45000;
+        break;
+
+    case 3:
+        menu.pesanan[menu.jumlahpesanan] = "Red Wine Mocktail";
+        menu.harga[menu.jumlahpesanan] = 25000;
+        break;
+
+    case 4:
+        menu.pesanan[menu.jumlahpesanan] = "Lemon Tea";
+        menu.harga[menu.jumlahpesanan] = 12000;
+        break;
+
+    default:
+        cout<<"Pilihan tidak ada pada daftar menu.\n";
+        break;
+    
+   }
+
+   cout<<menu.pesanan[menu.jumlahpesanan]<<" ditambahkan ke pesanan.\n";
+        menu.jumlahpesanan++;
+
+        cout<<"Ingin menambah menu lagi? (y/n): ";
+        cin>>menu.lagi;
+
+    }while(menu.lagi == 'y' || menu.lagi == 'Y');
+
+ }
+}
+    
+    //membuat alamat dan ongkir    
+    void menampilkanmenu() {
+     pilihantoko();
+      int total = 0;
+    cout<< "\n=== Pesanan Anda ===\n";
+    for(int i = 0; i < menu.jumlahpesanan; i++){
+        cout<<i + 1<< ". "<<menu.pesanan[i]<<" - Rp "<<menu.harga[i]<<endl;
+        total = total + menu.harga[i];
+    }
+    cout<<"Total harga: Rp "<<total<<endl;
+
+    }
+
+//membuat fungsi untuk mendapatkan/mengeluarkan harga
+    int gettotalharga() {
+    int total = 0;
+    for (int i = 0; i < menu.jumlahpesanan; i++) {
+        total += menu.harga[i];
+    }
+    return total;
+  }
+   
+};
+
+// deklarasi output alamat dan ongkir
+struct Alamatongkir{
+    string masukanalamat;
+    int ongkir;
+    int totalongkir;
+    int jarak;
+};
+
+//memuat class memasukan fungsi alamat dan ongkir
+class Alamat{
+    private:
+    Alamatongkir alamatongkir;
+
+    public:
+    void inputalamat() {
+
+    //memasukan ongkir secara statis
+    alamatongkir.ongkir = 5000;
+
+    cout <<"Masukkan Alamat Pengiriman: ";
+    cin.ignore();
+    getline(cin, alamatongkir.masukanalamat);
+    
+    cout<<"Masukkan Jarak Pengiriman dari rumah anda dalam satuan KM: ";
+    cin>>alamatongkir.jarak;
+
+    //perkondision untuk menentukan ongkos kirim berdasarkan jarak
+    if(alamatongkir.jarak <= 5) {
+        alamatongkir.totalongkir = alamatongkir.ongkir + 5000;
+
+    } else if(alamatongkir.ongkir <= 10) {
+        alamatongkir.totalongkir = alamatongkir.ongkir + 10000;
+
+    } else {
+        alamatongkir.totalongkir = alamatongkir.ongkir + 15000;
+    }
+
+    cout<<"\n=== Alamat dan Ongkos Kirim ===\n";
+    cout<<"Alamat Pengiriman: "<<alamatongkir.masukanalamat <<endl;
+    cout<<"Total Ongkos Kirim: Rp " <<alamatongkir.totalongkir <<endl;
+
+    }
+    //mengeluarkan harga ongkir dari fungsinya
+    int gettotalongkir() {
+        return alamatongkir.totalongkir;
+    }
+};
+
+//membuat menu untuk system pembayaran
+class pembayaran{
+private:
+    double saldoDompet = 200000;
+    double limitKartu = 1000000;
+
+public:
+    void prosesPembayaran(int total, int totalongkir) {
+        int metode;
+
+        cout<<"\n=== Pembayaran ===\n";
+        cout<<"Total yang harus dibayar: Rp "<<total + totalongkir<< endl;
+        cout<<"Pilih metode pembayaran:\n";
+        cout<<"1. Dompet Digital\n";
+        cout<<"2. Kartu Kredit\n";
+        cout<<"Pilihan Anda: ";
+        cin>>metode;
+
+        if(metode == 1) {
+            if(saldoDompet >= total + totalongkir) {
+                saldoDompet -= total + totalongkir;
+                cout<<"Pembayaran berhasil dengan Dompet Digital.\n";
+                cout<<"Sisa saldo: Rp"<<saldoDompet<<endl;
+
+            }else{
+                cout<<"Saldo tidak mencukupi.\n";
+
+            }
+        }else if(metode == 2){
+            if(limitKartu >= total + totalongkir) {
+                limitKartu -= total + totalongkir;
+                cout << "Pembayaran berhasil dengan Kartu Kredit.\n";
+                cout << "Sisa limit: Rp" << limitKartu << endl;
+
+            }else{
+                cout<< "Limit kartu tidak mencukupi.\n";
+
+            }
+
+        }else{
+            cout << "Metode tidak dikenali.\n";
+        }
+    }
+
+    //membuat output struk
+    void strukPembayaran(int total, int totalongkir) {
+        cout << "\n=== Struk Pembayaran ===\n";
+        cout << "Total Harga: Rp " << total << endl;
+        cout << "Total Ongkos Kirim: Rp " << totalongkir << endl;
+        cout << "Total Pembayaran: Rp " << (total + totalongkir) << endl;
+        cout << "Terima kasih telah berbelanja!\n";
+
+    }
+
+};
+
+
+
+
+
+int main() {
+    //output menu login
+    menulogin akun;
+    Toko toko;
+    Alamat alamat;
+    pembayaran bayar;
+
+   //menulogin
+    akun.menampilkanmenu();
+
+    system("timeout /t 2");
+    system("cls");
+
+    //melakukan perkondisiian mau searching atau tidak, jika tidak maka akan menampilkan toko
+    toko.pilihsearchingdantoko();
+  //  toko.menampilkanmenu();
+    
+  //shorting
+   char sortChoice;
+    cout << "\nApakah ingin mengurutkan pesanan berdasarkan harga? (y/n): ";
+    cin>>sortChoice;
+    if (sortChoice == 'y' || sortChoice == 'Y') {
+        toko.shortingHarga();
+    }
+    
+    alamat.inputalamat();
+
+    //menghitung total harga dan ongkir
+    int total = toko.gettotalharga();
+    int totalongkir = alamat.gettotalongkir();
+    bayar.prosesPembayaran(total,totalongkir);
+    //system("cls");
+
+    //struk pembayaran
+    bayar.strukPembayaran(total, totalongkir);
+    return 0;
+
+}
