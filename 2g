@@ -1,0 +1,92 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+// Struktur data KTP
+struct DataKTP {
+    long long nik;
+    string nama, ttl, alamat, kel, kec, agama, kawin, warga, berlaku, darah, kerja;
+    int rt;
+};
+
+// Node untuk Linked List
+struct Node {
+    DataKTP data;
+    Node* next;
+};
+
+// Fungsi untuk menambah node di depan (karena tim ganjil)
+void tambahDepan(Node*& head, DataKTP newData) {
+    Node* baru = new Node;
+    baru->data = newData;
+    baru->next = head;
+    head = baru;
+}
+
+// Fungsi untuk menampilkan semua data dari Linked List
+void tampilkan(Node* head) {
+    Node* bantu = head;
+    while (bantu != nullptr) {
+        cout << "----------------------------------------\n";
+        cout << "NIK       : " << bantu->data.nik << endl;
+        cout << "Nama      : " << bantu->data.nama << endl;
+        cout << "TTL       : " << bantu->data.ttl << endl;
+        cout << "Alamat    : " << bantu->data.alamat << endl;
+        cout << "RT        : " << bantu->data.rt << endl;
+        cout << "Kelurahan : " << bantu->data.kel << endl;
+        cout << "Kecamatan : " << bantu->data.kec << endl;
+        cout << "Agama     : " << bantu->data.agama << endl;
+        cout << "Status    : " << bantu->data.kawin << endl;
+        cout << "Kewargan. : " << bantu->data.warga << endl;
+        cout << "Berlaku   : " << bantu->data.berlaku << endl;
+        cout << "Darah     : " << bantu->data.darah << endl;
+        cout << "Pekerjaan : " << bantu->data.kerja << endl;
+        bantu = bantu->next;
+    }
+}
+
+// Fungsi membaca data dari file dan simpan ke Linked List
+void bacaFile(const string& namaFile, Node*& head) {
+    ifstream file(namaFile);
+    if (!file) {
+        cout << "Gagal membuka file!" << endl;
+        return;
+    }
+
+    DataKTP temp;
+    while (file >> temp.nik) {
+        file.ignore(); // lewati spasi
+        getline(file, temp.nama);
+        getline(file, temp.ttl);
+        getline(file, temp.alamat);
+        file >> temp.rt; file.ignore();
+        getline(file, temp.kel);
+        getline(file, temp.kec);
+        getline(file, temp.agama);
+        getline(file, temp.kawin);
+        getline(file, temp.warga);
+        getline(file, temp.berlaku);
+        getline(file, temp.darah);
+        getline(file, temp.kerja);
+
+        tambahDepan(head, temp);
+    }
+
+    file.close();
+}
+
+int main() {
+    Node* head = nullptr;
+    string namaFile;
+
+    cout << "Masukkan nama file data KTP (contoh: dataKTP.txt): ";
+    cin >> namaFile;
+
+    bacaFile(namaFile, head);
+
+    cout << "\n=== DATA KTP DARI FILE (Dimasukkan dari depan) ===\n";
+    tampilkan(head);
+
+    return 0;
+}
