@@ -1,0 +1,127 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct DataKTP {
+    string nama, ttl, alamat, kel, kec, agama, kawin, warga, berlaku, darah, kerja;
+    long long nik;
+    int rt;
+};
+
+// Struktur node untuk Linked List
+struct Node {
+    DataKTP data;
+    Node* next;
+};
+
+// Class Linked List
+class LinkedList {
+private:
+    Node* head;
+public:
+    LinkedList() { head = nullptr; }
+
+    // Fungsi menambah data (karena tim ganjil → di belakang)
+    void tambahData(const DataKTP& newData) {
+        Node* newNode = new Node{newData, nullptr};
+        if (!head) {
+            head = newNode;
+        } else {
+            Node* temp = head;
+            while (temp->next != nullptr)
+                temp = temp->next;
+            temp->next = newNode;
+        }
+        cout << "\n✅ Data berhasil ditambahkan di belakang!\n";
+    }
+
+    // Fungsi menghapus data berdasarkan NIK
+    void hapusData(long long nik) {
+        if (!head) {
+            cout << "\n❌ Data masih kosong!\n";
+            return;
+        }
+
+        Node* temp = head;
+        Node* prev = nullptr;
+
+        while (temp != nullptr && temp->data.nik != nik) {
+            prev = temp;
+            temp = temp->next;
+        }
+
+        if (!temp) {
+            cout << "\n⚠️ Data dengan NIK " << nik << " tidak ditemukan!\n";
+            return;
+        }
+
+        if (prev == nullptr)
+            head = head->next;
+        else
+            prev->next = temp->next;
+
+        delete temp;
+        cout << "\n🗑️ Data dengan NIK " << nik << " berhasil dihapus!\n";
+    }
+
+    // Menampilkan semua data
+    void tampilkan() {
+        if (!head) {
+            cout << "\n📂 Tidak ada data untuk ditampilkan!\n";
+            return;
+        }
+
+        cout << "\n===== DAFTAR DATA KTP =====\n";
+        Node* temp = head;
+        while (temp != nullptr) {
+            cout << "\nNIK       : " << temp->data.nik;
+            cout << "\nNama      : " << temp->data.nama;
+            cout << "\nAlamat    : " << temp->data.alamat;
+            cout << "\n----------------------------------";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
+
+// Program utama
+int main() {
+    LinkedList list;
+    DataKTP d;
+    int pilih;
+    do {
+        cout << "\n==== MENU LINKED LIST DATA KTP ====\n";
+        cout << "1. Tambah Data\n";
+        cout << "2. Hapus Data\n";
+        cout << "3. Tampilkan Data\n";
+        cout << "0. Keluar\n";
+        cout << "Pilih: ";
+        cin >> pilih;
+        cin.ignore();
+
+        switch (pilih) {
+        case 1:
+            cout << "\nMasukkan NIK       : "; cin >> d.nik; cin.ignore();
+            cout << "Masukkan Nama      : "; getline(cin, d.nama);
+            cout << "Masukkan Alamat    : "; getline(cin, d.alamat);
+            list.tambahData(d);
+            break;
+        case 2:
+            long long hapusNik;
+            cout << "\nMasukkan NIK yang akan dihapus: ";
+            cin >> hapusNik;
+            list.hapusData(hapusNik);
+            break;
+        case 3:
+            list.tampilkan();
+            break;
+        case 0:
+            cout << "\nKeluar dari program...\n";
+            break;
+        default:
+            cout << "\nPilihan tidak valid!\n";
+        }
+    } while (pilih != 0);
+
+    return 0;
+}
